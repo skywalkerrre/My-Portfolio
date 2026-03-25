@@ -22,10 +22,10 @@ body{background:var(--void);color:var(--text);font-family:'Barlow',sans-serif;li
 #cur-ring{position:fixed;width:34px;height:34px;border:1px solid rgba(0,255,231,.42);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .14s,height .14s,border-color .14s;}
 
 /* CANVAS */
-#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cvs{position:fixed;inset:0;z-index:1;pointer-events:none;}
 
 /* SCANLINES */
-body::after{content:'';position:fixed;inset:0;z-index:9990;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);}
+body::after{content:'';position:fixed;inset:0;z-index:9992;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,rgba(0,0,8,.07) 3px,rgba(0,0,8,.07) 4px);}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:space-between;padding:.9rem 2.6rem;background:rgba(2,8,24,.80);backdrop-filter:blur(22px);border-bottom:1px solid var(--border);}
@@ -40,7 +40,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:cen
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* LAYOUT */
-section{padding:7rem 0;position:relative;z-index:10;}
+section{padding:7rem 0;position:relative;z-index:10;background:transparent;}
 .wrap{max-width:1080px;margin:0 auto;padding:0 2.4rem;}
 
 /* SECTION HEADER */
@@ -100,7 +100,7 @@ section{padding:7rem 0;position:relative;z-index:10;}
 .astl{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.08em;line-height:1.4;}
 
 /* SKILLS */
-#skills{background:rgba(2,8,20,.55);}
+#skills{background:rgba(0,4,20,0.38);}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1.2rem;}
 .st{padding:1.3rem 1.4rem;transition:transform .18s,border-color .18s;}
 .st:hover{transform:translateY(-3px);border-color:rgba(0,255,231,.24);}
@@ -131,7 +131,7 @@ section{padding:7rem 0;position:relative;z-index:10;}
 .chip{font-family:'Share Tech Mono',monospace;font-size:.6rem;padding:.14rem .46rem;border-radius:2px;background:rgba(0,191,255,.07);color:var(--cyan2);border:1px solid rgba(0,191,255,.14);}
 
 /* PROJECTS */
-#projects{background:rgba(2,8,20,.55);}
+#projects{background:rgba(0,4,20,0.38);}
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.3rem;}
 .pc{padding:1.5rem;transition:all .18s;display:flex;flex-direction:column;}
 .pc:hover{border-color:rgba(0,255,231,.24);transform:translateY(-3px);}
@@ -154,7 +154,7 @@ section{padding:7rem 0;position:relative;z-index:10;}
 .pu-venue{font-family:'Share Tech Mono',monospace;font-size:.64rem;color:var(--cyan);letter-spacing:.04em;}
 
 /* EDUCATION */
-#education{background:rgba(2,8,20,.55);}
+#education{background:rgba(0,4,20,0.38);}
 .edu-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;}
 .edu-i{padding:1.6rem;transition:all .18s;}
 .edu-i:hover{border-color:rgba(0,255,231,.2);transform:translateY(-3px);}
@@ -186,7 +186,7 @@ section{padding:7rem 0;position:relative;z-index:10;}
 .ach-dt{font-size:.74rem;color:var(--muted);font-weight:300;margin-top:.16rem;}
 
 /* VOLUNTEERING */
-#volunteering{background:rgba(2,8,20,.55);}
+#volunteering{background:rgba(0,4,20,0.38);}
 .vi{padding:1.4rem 1.6rem;margin-bottom:1.1rem;transition:border-color .18s;position:relative;}
 .vi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--cyan2),transparent);}
 .vi:hover{border-color:rgba(0,191,255,.22);}
@@ -276,7 +276,7 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
         </h1>
         <p class="hsub">Building <em>agentic AI systems</em> at Oracle. Researcher in NeRF, LLMs &amp; Computer Vision. Passionate about the intersection of <em>autonomous systems</em>, algorithmic trading &amp; space exploration.</p>
         <div class="hctas">
-          <a class="btn p" href="mailto:thesomilsinghofficial@gmail.com">▶ INITIATE CONTACT</a>
+          <a class="btn p" href="/cdn-cgi/l/email-protection#5a2e323f29353733362933343d32353c3c3339333b361a3d373b333674393537">▶ INITIATE CONTACT</a>
           <a class="btn g" href="https://github.com/skywalkerrre" target="_blank">◈ GITHUB</a>
           <a class="btn g" href="https://www.linkedin.com/in/somil-singh" target="_blank">◈ LINKEDIN</a>
         </div>
@@ -287,7 +287,6 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
         <div class="hrow"><span class="hk">ROLE</span><span class="hv c">FULL-STACK AI ENG</span></div>
         <div class="hrow"><span class="hk">LINES IN PROD</span><span class="hv">2,500+</span></div>
         <div class="hrow"><span class="hk">AI TIME SAVED</span><span class="hv c">35%</span></div>
-        <div class="hrow"><span class="hk">CGPA</span><span class="hv g">8.62 / 10.0</span></div>
         <div class="hrow"><span class="hk">GRE</span><span class="hv g">335 / 340</span></div>
         <div class="hrow"><span class="hk">TOEFL</span><span class="hv">116 / 120</span></div>
         <div class="hrow"><span class="hk">CHESS ELO</span><span class="hv">1340 INTL</span></div>
@@ -439,7 +438,7 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
         <div class="pn">Object Classification & Tracking</div>
         <div class="pdesc">Real-time pipeline using YOLOv4, TensorFlow and OpenCV achieving sub-30ms inference. Combines selective class tracking with dynamic frame-based cropping for 75–95% accuracy on high-speed video streams.</div>
         <div class="ptags"><span class="ptag">YOLOv4</span><span class="ptag">TensorFlow</span><span class="ptag">OpenCV</span><span class="ptag">Python</span></div>
-        <div class="pub-b">📄 Published — IJISRT Vol.8, Issue 8 · Aug 2023</div>
+        <a href="https://www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects" target="_blank" class="pub-b" style="text-decoration:none;cursor:none;">📄 Published — IJISRT Vol.8, Issue 8 · Aug 2023 ↗</a>
       </div>
       <div class="hc pc rv">
         <div class="pt"><div class="pi">🛡️</div><span class="pp">2023</span></div>
@@ -486,13 +485,14 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
         <div class="pu-title">Object Detection, Classification and Tracking of Everyday Common Objects</div>
         <div class="pu-auth">Somil Singh, Shivansh Bharghav</div>
         <div class="pu-venue">International Journal of Innovative Science and Research Technology (IJISRT) · Vol.8, Issue 8, Aug 2023 · Issue No: 2456-2165</div>
+        <a href="https://www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects" target="_blank" style="display:inline-flex;align-items:center;gap:.45rem;margin-top:.9rem;font-family:'Share Tech Mono',monospace;font-size:.64rem;color:var(--cyan);border:1px solid rgba(0,255,231,.22);padding:.32rem .8rem;border-radius:2px;text-decoration:none;transition:all .18s;background:rgba(0,255,231,.05);" onmouseover="this.style.background='rgba(0,255,231,.12)';this.style.borderColor='var(--cyan)'" onmouseout="this.style.background='rgba(0,255,231,.05)';this.style.borderColor='rgba(0,255,231,.22)'">↗ READ PAPER</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ TEST SCORES ═══ -->
-<section id="testscores" style="background:rgba(2,8,20,.55);">
+<section id="testscores" style="background:rgba(0,4,20,0.38);">
   <div class="wrap">
     <div class="eyebrow rv">Assessments</div>
     <h2 class="stitle rv">Test <span>Scores</span></h2>
@@ -620,7 +620,7 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
       <h2 class="stitle rv" style="text-align:center;">Open <span>Channel</span></h2>
       <p class="csub rv">Available for research collaborations, engineering challenges, and conversations at the frontier of AI, quant finance, and autonomous systems.</p>
       <div class="cbtns rv">
-        <a class="cbtn" href="mailto:thesomilsinghofficial@gmail.com">
+        <a class="cbtn" href="/cdn-cgi/l/email-protection#9de9f5f8eef2f0f4f1eef4f3faf5f2fbfbf4fef4fcf1ddfaf0fcf4f1b3fef2f0">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
           EMAIL
         </a>
@@ -642,12 +642,12 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
   <div class="fc">12.9716° N · 77.5946° E · <span>SYSTEM NOMINAL</span></div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ─── STARFIELD ─── */
 (function(){
   const canvas=document.getElementById('cvs');
   const ctx=canvas.getContext('2d');
-  let W,H,stars=[],nebulae=[],drones=[],nodes=[],conns=[];
+  let W,H,stars=[],nebulae=[],drones=[],nodes=[],conns=[],shootingStars=[];
 
   function resize(){
     W=canvas.width=window.innerWidth;
@@ -655,133 +655,197 @@ footer{border-top:1px solid var(--border);padding:1.2rem 2.5rem;z-index:10;posit
   }
 
   function init(){
-    // Stars
+    // Stars — much more, much brighter
     stars=[];
-    for(let i=0;i<360;i++){
+    for(let i=0;i<500;i++){
+      const isCyan=Math.random()<.18, isBlue=Math.random()<.12;
       stars.push({
-        x:Math.random()*W,y:Math.random()*H,
-        r:Math.random()*1.4+.18,
-        a:Math.random()*.85+.15,
-        sp:Math.random()*.14+.02,
-        tw:Math.random()*.025+.005,
-        ph:Math.random()*Math.PI*2,
-        col:Math.random()<.14?'0,255,231':Math.random()<.1?'0,191,255':'255,255,255'
+        x:Math.random()*W, y:Math.random()*H,
+        r: Math.random()<.04 ? Math.random()*2.5+1.8 : Math.random()*1.2+0.3,
+        a: Math.random()*.6+.4,
+        sp: Math.random()*.18+.015,
+        tw: Math.random()*.03+.006,
+        ph: Math.random()*Math.PI*2,
+        col: isCyan?'0,255,231': isBlue?'100,210,255':'255,255,255'
       });
     }
-    // Nebulae
+    // Nebulae — much stronger
     nebulae=[];
-    [{cx:.12,cy:.18,rx:240,ry:170,h:190},{cx:.88,cy:.6,rx:190,ry:240,h:212},{cx:.5,cy:.88,rx:280,ry:150,h:200},{cx:.72,cy:.12,rx:160,ry:190,h:183}]
-    .forEach(c=>nebulae.push({x:c.cx*W,y:c.cy*H,rx:c.rx,ry:c.ry,hue:c.h,a:.02}));
+    [{cx:.08,cy:.15,rx:320,ry:220,h:185,str:.09},
+     {cx:.92,cy:.55,rx:260,ry:300,h:210,str:.07},
+     {cx:.45,cy:.9,rx:380,ry:180,h:198,str:.08},
+     {cx:.75,cy:.08,rx:220,ry:260,h:180,str:.06},
+     {cx:.3,cy:.5,rx:200,ry:160,h:195,str:.05}]
+    .forEach(c=>nebulae.push({x:c.cx*W,y:c.cy*H,rx:c.rx,ry:c.ry,hue:c.h,str:c.str}));
 
-    // Autonomous nav drones (glowing moving agents)
+    // Drones — bigger, faster, more visible
     drones=[];
-    for(let i=0;i<5;i++){
+    for(let i=0;i<6;i++){
       drones.push({
-        x:Math.random()*W,y:Math.random()*H,
-        vx:(Math.random()-.5)*.55,vy:(Math.random()-.5)*.55,
-        trail:[],maxT:22,sz:.9+Math.random()*.55
+        x:Math.random()*W, y:Math.random()*H,
+        vx:(Math.random()-.5)*.8, vy:(Math.random()-.5)*.8,
+        trail:[], maxT:30, sz:1.8+Math.random()*.8
       });
     }
 
-    // Neural network nodes (background)
+    // Neural net nodes — brighter
     nodes=[];conns=[];
-    for(let i=0;i<22;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,r:.6+Math.random()*.8,a:.06+Math.random()*.08,ph:Math.random()*Math.PI*2});
+    for(let i=0;i<28;i++) nodes.push({
+      x:Math.random()*W, y:Math.random()*H,
+      r:.8+Math.random()*.9, a:.12+Math.random()*.14, ph:Math.random()*Math.PI*2
+    });
     for(let i=0;i<nodes.length;i++){
       for(let j=i+1;j<nodes.length;j++){
-        const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y;
-        if(Math.sqrt(dx*dx+dy*dy)<220) conns.push([i,j]);
+        const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+        if(Math.sqrt(dx*dx+dy*dy)<250) conns.push([i,j]);
       }
     }
+
+    // Shooting stars
+    shootingStars=[];
+    for(let i=0;i<3;i++) spawnShootingStar();
   }
 
-  let t=0,scrollY=0;
+  function spawnShootingStar(){
+    shootingStars.push({
+      x: Math.random()*W*1.2 - W*.1,
+      y: Math.random()*H*.4,
+      vx: 6+Math.random()*8,
+      vy: 2+Math.random()*4,
+      len: 80+Math.random()*120,
+      a: 0.9+Math.random()*.1,
+      life: 1, decay: .012+Math.random()*.018
+    });
+  }
+
+  let t=0, scrollY=0;
   window.addEventListener('scroll',()=>{scrollY=window.scrollY;},{passive:true});
 
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // Deep space bg
-    const g=ctx.createRadialGradient(W*.5,H*.35,0,W*.5,H*.35,W*.92);
-    g.addColorStop(0,'rgba(4,10,32,1)');g.addColorStop(.6,'rgba(2,6,18,1)');g.addColorStop(1,'rgba(0,0,8,1)');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // DEEP SPACE — rich dark gradient, NOT pure black
+    const g=ctx.createRadialGradient(W*.5,H*.3,0,W*.5,H*.3,W);
+    g.addColorStop(0,'#040d28');
+    g.addColorStop(.4,'#020818');
+    g.addColorStop(.8,'#010510');
+    g.addColorStop(1,'#000208');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
 
-    // Nebulae
+    // NEBULAE — vivid, large, glowing
     nebulae.forEach(n=>{
-      const py=n.y-scrollY*.06;
-      const gr=ctx.createRadialGradient(n.x,py,0,n.x,py,n.rx);
-      gr.addColorStop(0,`hsla(${n.hue},88%,58%,${n.a*2.2})`);
-      gr.addColorStop(.45,`hsla(${n.hue},75%,48%,${n.a})`);
-      gr.addColorStop(1,'transparent');
-      ctx.save();ctx.scale(1,n.ry/n.rx);
-      ctx.fillStyle=gr;ctx.beginPath();
-      ctx.arc(n.x,py*n.rx/n.ry,n.rx,0,Math.PI*2);
-      ctx.fill();ctx.restore();
+      const py = n.y - scrollY*.05;
+      ctx.save();
+      ctx.scale(1, n.ry/n.rx);
+      const gr=ctx.createRadialGradient(n.x, py*n.rx/n.ry, 0, n.x, py*n.rx/n.ry, n.rx);
+      gr.addColorStop(0, `hsla(${n.hue},95%,65%,${n.str*3})`);
+      gr.addColorStop(.3, `hsla(${n.hue},85%,55%,${n.str*1.8})`);
+      gr.addColorStop(.65,`hsla(${n.hue},75%,45%,${n.str*.8})`);
+      gr.addColorStop(1, 'transparent');
+      ctx.fillStyle=gr;
+      ctx.beginPath(); ctx.arc(n.x, py*n.rx/n.ry, n.rx, 0, Math.PI*2);
+      ctx.fill(); ctx.restore();
     });
 
-    // HUD grid
-    ctx.strokeStyle='rgba(0,255,231,0.016)';ctx.lineWidth=.5;
-    const gs=130;
+    // HUD GRID — more visible
+    ctx.strokeStyle='rgba(0,255,231,0.028)'; ctx.lineWidth=.6;
+    const gs=120;
     for(let x=0;x<W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=(-scrollY*.015)%gs;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(let y=(-scrollY*.012)%gs;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
-    // Neural net edges
-    t+=.012;
+    // NEURAL NET EDGES
+    t+=.013;
     conns.forEach(([i,j])=>{
-      const pulse=Math.sin(t*1.2+i*.4)*.5+.5;
+      const pulse=Math.sin(t*1.4+i*.35)*.5+.5;
       ctx.beginPath();
-      ctx.moveTo(nodes[i].x,nodes[i].y-scrollY*.03);
-      ctx.lineTo(nodes[j].x,nodes[j].y-scrollY*.03);
-      ctx.strokeStyle=`rgba(0,191,255,${.018*pulse})`;ctx.lineWidth=.6;ctx.stroke();
+      ctx.moveTo(nodes[i].x, nodes[i].y-scrollY*.025);
+      ctx.lineTo(nodes[j].x, nodes[j].y-scrollY*.025);
+      ctx.strokeStyle=`rgba(0,191,255,${.032*pulse})`; ctx.lineWidth=.7; ctx.stroke();
     });
     nodes.forEach(n=>{
-      const tw=Math.sin(t*1.8+n.ph)*.4+.6;
-      ctx.beginPath();ctx.arc(n.x,n.y-scrollY*.03,n.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(0,191,255,${n.a*tw})`;ctx.fill();
+      const tw=Math.sin(t*2+n.ph)*.4+.6;
+      ctx.beginPath(); ctx.arc(n.x, n.y-scrollY*.025, n.r, 0, Math.PI*2);
+      ctx.fillStyle=`rgba(0,200,255,${n.a*tw})`; ctx.fill();
+      // Glow
+      const ng=ctx.createRadialGradient(n.x,n.y-scrollY*.025,0,n.x,n.y-scrollY*.025,n.r*4);
+      ng.addColorStop(0,`rgba(0,191,255,${n.a*.5*tw})`); ng.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(n.x,n.y-scrollY*.025,n.r*4,0,Math.PI*2);
+      ctx.fillStyle=ng; ctx.fill();
     });
 
-    // Stars
+    // STARS — bright, with halos for big ones
     stars.forEach(s=>{
-      const tw=Math.sin(t*s.tw*60+s.ph)*.35+.65;
+      const tw=Math.sin(t*s.tw*60+s.ph)*.3+.7;
       const yy=((s.y-scrollY*s.sp)%H+H)%H;
-      ctx.beginPath();ctx.arc(s.x,yy,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(${s.col},${s.a*tw})`;ctx.fill();
-      if(s.r>1&&tw>.88){
-        const g2=ctx.createRadialGradient(s.x,yy,0,s.x,yy,s.r*3.5);
-        g2.addColorStop(0,`rgba(${s.col},${.17*tw})`);g2.addColorStop(1,'transparent');
-        ctx.beginPath();ctx.arc(s.x,yy,s.r*3.5,0,Math.PI*2);ctx.fillStyle=g2;ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x,yy,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${s.col},${s.a*tw})`; ctx.fill();
+      if(s.r>1.2){
+        // Cross flare
+        ctx.strokeStyle=`rgba(${s.col},${s.a*tw*.4})`;
+        ctx.lineWidth=.5;
+        ctx.beginPath(); ctx.moveTo(s.x-s.r*4,yy); ctx.lineTo(s.x+s.r*4,yy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s.x,yy-s.r*4); ctx.lineTo(s.x,yy+s.r*4); ctx.stroke();
+        // Halo glow
+        const g2=ctx.createRadialGradient(s.x,yy,0,s.x,yy,s.r*6);
+        g2.addColorStop(0,`rgba(${s.col},${.25*tw})`); g2.addColorStop(1,'transparent');
+        ctx.beginPath(); ctx.arc(s.x,yy,s.r*6,0,Math.PI*2); ctx.fillStyle=g2; ctx.fill();
       }
     });
 
-    // Autonomous drones
+    // SHOOTING STARS
+    for(let i=shootingStars.length-1;i>=0;i--){
+      const ss=shootingStars[i];
+      const angle=Math.atan2(ss.vy,ss.vx);
+      const gss=ctx.createLinearGradient(ss.x,ss.y,ss.x-Math.cos(angle)*ss.len,ss.y-Math.sin(angle)*ss.len);
+      gss.addColorStop(0,`rgba(255,255,255,${ss.life*ss.a})`);
+      gss.addColorStop(.4,`rgba(0,255,231,${ss.life*ss.a*.6})`);
+      gss.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.moveTo(ss.x,ss.y);
+      ctx.lineTo(ss.x-Math.cos(angle)*ss.len, ss.y-Math.sin(angle)*ss.len);
+      ctx.strokeStyle=gss; ctx.lineWidth=1.5; ctx.stroke();
+      ss.x+=ss.vx; ss.y+=ss.vy; ss.life-=ss.decay;
+      if(ss.life<=0||ss.x>W+200||ss.y>H+100){
+        shootingStars.splice(i,1);
+        if(Math.random()<.6) spawnShootingStar();
+      }
+    }
+
+    // AUTONOMOUS DRONES — larger, more vivid
     drones.forEach(d=>{
-      d.x+=d.vx;d.y+=d.vy;
-      if(d.x<0||d.x>W)d.vx*=-1;
-      if(d.y<0||d.y>H)d.vy*=-1;
+      d.x+=d.vx; d.y+=d.vy;
+      if(d.x<0||d.x>W) d.vx*=-1;
+      if(d.y<0||d.y>H) d.vy*=-1;
       d.trail.push({x:d.x,y:d.y});
-      if(d.trail.length>d.maxT)d.trail.shift();
+      if(d.trail.length>d.maxT) d.trail.shift();
       for(let i=1;i<d.trail.length;i++){
-        const aa=(i/d.trail.length)*.28;
-        ctx.beginPath();ctx.moveTo(d.trail[i-1].x,d.trail[i-1].y);
+        const aa=(i/d.trail.length)*.55;
+        ctx.beginPath(); ctx.moveTo(d.trail[i-1].x,d.trail[i-1].y);
         ctx.lineTo(d.trail[i].x,d.trail[i].y);
-        ctx.strokeStyle=`rgba(0,255,231,${aa})`;ctx.lineWidth=.9;ctx.stroke();
+        ctx.strokeStyle=`rgba(0,255,231,${aa})`; ctx.lineWidth=1.2; ctx.stroke();
       }
-      ctx.beginPath();ctx.arc(d.x,d.y,d.sz,0,Math.PI*2);
-      ctx.fillStyle='rgba(0,255,231,0.75)';ctx.fill();
-      const dg=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.sz*5);
-      dg.addColorStop(0,'rgba(0,255,231,0.14)');dg.addColorStop(1,'transparent');
-      ctx.beginPath();ctx.arc(d.x,d.y,d.sz*5,0,Math.PI*2);ctx.fillStyle=dg;ctx.fill();
+      // Core dot
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.sz,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,255,231,0.95)'; ctx.fill();
+      // Inner glow
+      const dg=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.sz*8);
+      dg.addColorStop(0,'rgba(0,255,231,0.3)');
+      dg.addColorStop(.5,'rgba(0,191,255,0.1)');
+      dg.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.sz*8,0,Math.PI*2); ctx.fillStyle=dg; ctx.fill();
     });
 
-    // Scan line
-    const sy=(t*22)%H;
-    const sg=ctx.createLinearGradient(0,sy-3,0,sy+3);
-    sg.addColorStop(0,'transparent');sg.addColorStop(.5,'rgba(0,255,231,0.02)');sg.addColorStop(1,'transparent');
-    ctx.fillStyle=sg;ctx.fillRect(0,sy-3,W,6);
+    // ANIMATED SCAN LINE
+    const sy=(t*18)%H;
+    const sgr=ctx.createLinearGradient(0,sy-8,0,sy+8);
+    sgr.addColorStop(0,'transparent');
+    sgr.addColorStop(.5,'rgba(0,255,231,0.045)');
+    sgr.addColorStop(1,'transparent');
+    ctx.fillStyle=sgr; ctx.fillRect(0,sy-8,W,16);
 
     requestAnimationFrame(draw);
   }
   window.addEventListener('resize',()=>{resize();init();});
-  resize();init();draw();
+  resize(); init(); draw();
 })();
 
 /* ─── CURSOR ─── */
@@ -807,13 +871,4 @@ const secs=document.querySelectorAll('section[id]');
 const navAs=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',()=>{
   let cur2='';
-  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-130)cur2=s.id;});
-  navAs.forEach(a=>{
-    const on=a.getAttribute('href')==='#'+cur2;
-    a.style.color=on?'var(--cyan)':'';
-    a.classList.toggle('act',on);
-  });
-},{passive:true});
-</script>
-</body>
-</html>
+  secs.forEach(s=>{if(window.scrollY>=s.offse
