@@ -7,6 +7,945 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:#000510;color:#e8f0ff;font-family:'Barlow',sans-serif;line-height:1.7;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+#cur{position:fixed;width:11px;height:11px;background:#00ffe7;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 14px #00ffe7,0 0 32px rgba(0,255,231,.5);}
+#cur-ring{position:fixed;width:36px;height:36px;border:1.5px solid rgba(0,255,231,.55);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .15s;}
+
+/* CANVAS — behind everything */
+#cvs{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:.85rem 2.4rem;background:#010a1c;border-bottom:1px solid rgba(0,255,231,.15);}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:.92rem;color:#00ffe7;letter-spacing:.2em;text-decoration:none;text-shadow:0 0 18px #00ffe7;}
+.nav-links{display:flex;gap:1.6rem;list-style:none;}
+.nav-links a{color:#a0c0e0;font-family:'Share Tech Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:#00ffe7;transform:scaleX(0);transition:transform .2s;}
+.nav-links a:hover,.nav-links a.act{color:#00ffe7;}
+.nav-links a:hover::after,.nav-links a.act::after{transform:scaleX(1);}
+.nav-r{font-family:'Share Tech Mono',monospace;font-size:.64rem;color:#6090b0;display:flex;align-items:center;gap:.5rem;}
+.sdot{width:7px;height:7px;border-radius:50%;background:#00ff88;box-shadow:0 0 8px #00ff88;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* SECTIONS — solid backgrounds, z-index above canvas */
+section{padding:7rem 0;position:relative;z-index:10;background:#010c1e;}
+section:nth-of-type(even){background:#020f24;}
+#home{background:transparent!important;min-height:100vh;display:flex;align-items:center;padding-top:5rem;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 2.2rem;}
+
+/* SECTION LABELS */
+.eyebrow{font-family:'Share Tech Mono',monospace;font-size:.66rem;color:#00ffe7;letter-spacing:.22em;text-transform:uppercase;margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem;}
+.eyebrow::before{content:'';width:28px;height:1px;background:#00ffe7;}
+.eyebrow::after{content:'';width:48px;height:1px;background:linear-gradient(to right,#00ffe7,transparent);}
+.stitle{font-family:'Orbitron',monospace;font-weight:700;font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-.01em;line-height:1.15;margin-bottom:2.4rem;color:#ffffff;}
+.stitle span{color:#00ffe7;}
+
+/* HUD CARD */
+.hc{position:relative;border:1px solid rgba(0,255,231,.2);background:#071428;border-radius:3px;transition:border-color .2s,transform .2s,box-shadow .2s;}
+.hc::before,.hc::after{content:'';position:absolute;width:14px;height:14px;}
+.hc::before{top:-1px;left:-1px;border-top:2px solid #00ffe7;border-left:2px solid #00ffe7;}
+.hc::after{bottom:-1px;right:-1px;border-bottom:2px solid #00ffe7;border-right:2px solid #00ffe7;}
+.hc:hover{border-color:rgba(0,255,231,.45);box-shadow:0 0 24px rgba(0,255,231,.08),inset 0 0 24px rgba(0,255,231,.03);}
+
+/* HERO */
+.h-grid{display:grid;grid-template-columns:1fr 320px;gap:3.5rem;align-items:center;}
+.htag{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#00ffe7;letter-spacing:.15em;margin-bottom:1.2rem;opacity:0;animation:fadeUp .5s .1s forwards;}
+.hname{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(2.6rem,6.5vw,5rem);line-height:1;letter-spacing:-.02em;opacity:0;animation:fadeUp .5s .25s forwards;}
+.hname .f{display:block;color:#ffffff;}
+.hname .l{display:block;color:#00ffe7;text-shadow:0 0 40px rgba(0,255,231,.6),0 0 80px rgba(0,255,231,.25);}
+.hsub{font-size:1rem;color:#c8ddf4;margin-top:1.2rem;max-width:490px;font-weight:400;line-height:1.85;opacity:0;animation:fadeUp .5s .4s forwards;}
+.hsub em{color:#00ffe7;font-style:normal;font-weight:500;}
+.hctas{display:flex;gap:.9rem;margin-top:2rem;flex-wrap:wrap;opacity:0;animation:fadeUp .5s .55s forwards;}
+.btn{font-family:'Share Tech Mono',monospace;font-size:.72rem;padding:.65rem 1.5rem;letter-spacing:.1em;text-decoration:none;border-radius:2px;transition:all .18s;cursor:none;display:inline-flex;align-items:center;gap:.45rem;}
+.btn.p{background:#00ffe7;color:#000a18;border:1px solid #00ffe7;font-weight:700;}
+.btn.p:hover{box-shadow:0 0 30px rgba(0,255,231,.5),0 0 60px rgba(0,255,231,.2);transform:translateY(-2px);}
+.btn.g{background:rgba(0,255,231,.08);color:#00ffe7;border:1.5px solid rgba(0,255,231,.5);font-weight:500;}
+.btn.g:hover{background:rgba(0,255,231,.18);border-color:#00ffe7;box-shadow:0 0 18px rgba(0,255,231,.25);transform:translateY(-2px);}
+
+/* HUD PANEL */
+.hudp{padding:1.5rem;opacity:0;animation:fadeUp .5s .7s forwards;}
+.hudp-t{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:#00ffe7;letter-spacing:.15em;margin-bottom:1rem;border-bottom:1px solid rgba(0,255,231,.15);padding-bottom:.7rem;}
+.hrow{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:'Share Tech Mono',monospace;}
+.hrow:last-of-type{border-bottom:none;}
+.hk{font-size:.62rem;color:#7aadcf;letter-spacing:.06em;}
+.hv{font-size:.72rem;color:#ddeeff;font-weight:500;}
+.hv.c{color:#00ffe7;text-shadow:0 0 10px rgba(0,255,231,.4);}
+.hv.go{color:#f0c040;}
+.hv.gr{color:#00ff88;}
+.bar-w{margin-top:1.1rem;}
+.bar-l{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#7aadcf;letter-spacing:.07em;display:flex;justify-content:space-between;margin-bottom:.28rem;}
+.bar{height:3px;background:rgba(0,255,231,.1);border-radius:2px;overflow:hidden;}
+.bar-f{height:100%;background:linear-gradient(to right,#00bfff,#00ffe7);animation:barFill 1.4s 1s ease forwards;width:0;}
+@keyframes barFill{to{width:var(--p);}}
+
+/* ABOUT */
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+.atxt{font-size:.95rem;color:#c0d8f0;font-weight:300;line-height:1.9;}
+.atxt p+p{margin-top:.9rem;}
+.atxt strong{color:#00ffe7;font-weight:500;}
+.astats{display:flex;flex-direction:column;gap:.85rem;}
+.ast{padding:.9rem 1.2rem;display:flex;align-items:center;gap:.9rem;}
+.astn{font-family:'Orbitron',monospace;font-weight:700;font-size:1.7rem;color:#00ffe7;line-height:1;flex-shrink:0;text-shadow:0 0 20px rgba(0,255,231,.4);}
+.astl{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:#8ab0cc;letter-spacing:.08em;line-height:1.4;}
+
+/* SKILLS */
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1.2rem;}
+.st{padding:1.3rem 1.4rem;}
+.st-h{font-family:'Orbitron',monospace;font-weight:600;font-size:.7rem;color:#5fd4ff;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.45rem;}
+.st-h::before{content:'▸';color:#00ffe7;font-size:.65rem;}
+.tc{display:flex;flex-wrap:wrap;gap:.4rem;}
+.tg{font-family:'Share Tech Mono',monospace;font-size:.66rem;padding:.22rem .6rem;border-radius:2px;transition:transform .1s,box-shadow .1s;}
+.tg:hover{transform:scale(1.06);box-shadow:0 0 10px rgba(0,255,231,.2);}
+.tg.a{background:rgba(0,255,231,.1);color:#00ffe7;border:1px solid rgba(0,255,231,.28);}
+.tg.b{background:rgba(0,191,255,.11);color:#5fd4ff;border:1px solid rgba(0,191,255,.3);}
+.tg.d{background:rgba(200,220,255,.08);color:#b8d0ec;border:1px solid rgba(200,220,255,.18);}
+
+/* EXPERIENCE */
+.el{display:flex;flex-direction:column;gap:1.4rem;}
+.ei{padding:1.8rem 2rem;position:relative;}
+.ei::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,#00ffe7,rgba(0,255,231,0));}
+.et{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.65rem;margin-bottom:1rem;}
+.er{font-family:'Orbitron',monospace;font-weight:700;font-size:.9rem;color:#ffffff;line-height:1.3;}
+.eo{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:#00ffe7;letter-spacing:.06em;margin-top:.28rem;}
+.ed{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:#8ab0cc;text-align:right;line-height:1.6;flex-shrink:0;}
+.badge{display:inline-block;margin-top:.28rem;padding:.14rem .5rem;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:2px;color:#00ff88;font-size:.6rem;letter-spacing:.1em;}
+.ebl{list-style:none;display:flex;flex-direction:column;gap:.55rem;}
+.ebl li{font-size:.88rem;color:#b8d4f0;font-weight:300;padding-left:1.3rem;position:relative;line-height:1.65;}
+.ebl li::before{content:'◈';position:absolute;left:0;color:#00ffe7;font-size:.58rem;top:.38rem;}
+.ebl li strong{color:#ffffff;font-weight:500;}
+.chips{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:1rem;}
+.chip{font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:.16rem .5rem;border-radius:2px;background:rgba(0,191,255,.1);color:#6cd4ff;border:1px solid rgba(0,191,255,.25);}
+
+/* PROJECTS */
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.3rem;}
+.pc{padding:1.5rem;display:flex;flex-direction:column;}
+.pt{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem;}
+.pi{font-size:1.5rem;line-height:1;filter:drop-shadow(0 0 8px rgba(0,255,231,.4));}
+.pp{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:#8ab0cc;letter-spacing:.05em;}
+.pn{font-family:'Orbitron',monospace;font-weight:600;font-size:.82rem;color:#ffffff;margin-bottom:.65rem;}
+.pdesc{font-size:.86rem;color:#b0ccec;font-weight:300;flex:1;line-height:1.78;}
+.ptags{display:flex;flex-wrap:wrap;gap:.32rem;margin-top:.85rem;}
+.ptag{font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:.15rem .46rem;border-radius:2px;background:rgba(180,210,255,.07);color:#a0c0dc;border:1px solid rgba(180,210,255,.15);}
+.pub-b{margin-top:.8rem;padding:.45rem .75rem;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.28);border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:.64rem;color:#f0c040;display:flex;align-items:center;gap:.4rem;}
+
+/* PUBLICATIONS */
+.pu-list{display:flex;flex-direction:column;gap:1rem;}
+.pu{padding:1.5rem 1.7rem;}
+.pu-n{font-family:'Orbitron',monospace;font-size:.62rem;color:#00ffe7;letter-spacing:.12em;margin-bottom:.45rem;}
+.pu-title-link{text-decoration:none;display:block;margin-bottom:.35rem;}
+.pu-title{font-weight:500;font-size:.96rem;color:#ffffff;transition:color .18s;}
+.pu-title-link:hover .pu-title{color:#00ffe7;}
+.pu-ext{color:#00ffe7;margin-left:.3rem;}
+.pu-auth{font-size:.82rem;color:#a0c0dc;font-weight:300;margin-bottom:.28rem;}
+.pu-venue{font-family:'Share Tech Mono',monospace;font-size:.66rem;color:#5fd4ff;letter-spacing:.04em;}
+.pu-url{display:flex;align-items:center;gap:.6rem;margin-top:1rem;padding:.65rem 1rem;background:rgba(0,255,231,.05);border:1px solid rgba(0,255,231,.22);border-radius:3px;text-decoration:none;transition:all .18s;cursor:none;}
+.pu-url:hover{background:rgba(0,255,231,.1);border-color:rgba(0,255,231,.5);}
+.pu-url-text{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:#00ffe7;letter-spacing:.04em;flex:1;word-break:break-all;}
+.pu-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:.9rem;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.48rem 1.1rem;background:rgba(0,255,231,.08);border:1px solid rgba(0,255,231,.35);border-radius:2px;color:#00ffe7;text-decoration:none;transition:all .18s;cursor:none;}
+.pu-btn:hover{background:#00ffe7;color:#000a18;box-shadow:0 0 22px rgba(0,255,231,.35);}
+
+/* TEST SCORES */
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.3rem;}
+.ts-card{padding:1.6rem 1.7rem;}
+.ts-exam{font-family:'Orbitron',monospace;font-weight:700;font-size:1.05rem;color:#00ffe7;margin-bottom:.25rem;text-shadow:0 0 14px rgba(0,255,231,.35);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+.ts-badge{font-family:'Share Tech Mono',monospace;font-size:.58rem;background:rgba(0,255,231,.12);border:1px solid rgba(0,255,231,.3);border-radius:2px;padding:.15rem .5rem;color:#00ffe7;letter-spacing:.08em;}
+.ts-score{font-family:'Orbitron',monospace;font-weight:700;font-size:1.8rem;color:#ffffff;line-height:1;}
+.ts-total{font-size:.78rem;color:#8ab0cc;font-weight:400;}
+.ts-subs{margin-top:.95rem;display:flex;flex-direction:column;gap:.32rem;}
+.ts-sub{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.67rem;}
+.ts-sub-name{color:#8ab0cc;}
+.ts-sub-val{color:#ddeeff;font-weight:500;}
+
+/* EDUCATION */
+.edu-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.3rem;}
+.edu-i{padding:1.6rem;}
+.edu-d{font-family:'Orbitron',monospace;font-weight:600;font-size:.82rem;color:#ffffff;margin-bottom:.35rem;}
+.edu-s{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#00ffe7;margin-bottom:.2rem;letter-spacing:.04em;}
+.edu-y{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:#8ab0cc;}
+.edu-gr{display:inline-block;margin-top:.5rem;margin-right:.5rem;padding:.25rem .75rem;background:rgba(0,255,231,.08);border:1px solid rgba(0,255,231,.25);border-radius:2px;font-family:'Orbitron',monospace;font-size:.7rem;color:#00ffe7;}
+.edu-extras{margin-top:.75rem;display:flex;flex-direction:column;gap:.3rem;}
+.edu-extras span{font-size:.8rem;color:#a8c8e0;font-weight:300;padding-left:.95rem;position:relative;}
+.edu-extras span::before{content:'◦';position:absolute;left:0;color:#00bfff;font-size:.75rem;}
+
+/* ACHIEVEMENTS */
+.ach-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:1rem;}
+.ach-i{padding:1.15rem 1.3rem;display:flex;align-items:flex-start;gap:.9rem;}
+.ach-gl{font-size:1.35rem;flex-shrink:0;line-height:1;filter:drop-shadow(0 0 6px rgba(240,192,64,.4));}
+.ach-nm{font-weight:500;font-size:.88rem;color:#ffffff;}
+.ach-dt{font-size:.77rem;color:#8ab0cc;font-weight:300;margin-top:.18rem;}
+
+/* VOLUNTEERING */
+.vi{padding:1.5rem 1.7rem;position:relative;}
+.vi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,#00bfff,transparent);}
+.vr{font-family:'Orbitron',monospace;font-weight:600;font-size:.82rem;color:#ffffff;}
+.vo{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:#00bfff;margin-top:.2rem;margin-bottom:.75rem;letter-spacing:.05em;}
+.vbl{list-style:none;display:flex;flex-direction:column;gap:.5rem;}
+.vbl li{font-size:.86rem;color:#b0ccec;font-weight:300;padding-left:1.2rem;position:relative;}
+.vbl li::before{content:'◦';position:absolute;left:0;color:#00bfff;}
+.vbl li strong{color:#ffffff;font-weight:500;}
+
+/* CERTIFICATIONS */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem;}
+.cr{padding:.9rem 1.15rem;display:flex;align-items:center;gap:.8rem;}
+.ci{width:34px;height:34px;border-radius:3px;background:rgba(0,255,231,.08);border:1px solid rgba(0,255,231,.18);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.cn{font-size:.83rem;font-weight:400;color:#ddeeff;}
+.co{font-family:'Share Tech Mono',monospace;font-size:.63rem;color:#8ab0cc;margin-top:.1rem;}
+.cid{font-family:'Share Tech Mono',monospace;font-size:.56rem;color:rgba(0,255,231,.5);margin-top:.08rem;word-break:break-all;}
+
+/* CONTACT */
+.cw{text-align:center;max-width:600px;margin:0 auto;}
+.csub{font-size:.95rem;color:#b0ccec;font-weight:300;max-width:460px;margin:0 auto 2.5rem;line-height:1.8;}
+.cbtns{display:flex;justify-content:center;flex-wrap:wrap;gap:.9rem;}
+.cbtn{display:inline-flex;align-items:center;gap:.55rem;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.68rem 1.5rem;border:1.5px solid rgba(0,255,231,.35);border-radius:2px;color:#c8e4f8;text-decoration:none;transition:all .18s;background:rgba(0,255,231,.06);cursor:none;}
+.cbtn:hover{border-color:#00ffe7;color:#00ffe7;box-shadow:0 0 20px rgba(0,255,231,.18);background:rgba(0,255,231,.12);}
+.cbtn svg{width:14px;height:14px;}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(0,255,231,.12);padding:1.3rem 2.4rem;z-index:10;position:relative;background:#010a1c;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
+.fc{font-family:'Share Tech Mono',monospace;font-size:.63rem;color:#7090b0;letter-spacing:.1em;}
+.fc span{color:#00ffe7;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;}
+.rv.vis{opacity:1;transform:none;}
+
+/* GLITCH */
+.glitch{position:relative;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{color:#ff4060;animation:g1 7s infinite;opacity:.5;}
+.glitch::after{color:#00bfff;animation:g2 7s infinite;opacity:.32;}
+@keyframes g1{0%,88%,100%{clip-path:inset(0 0 0 0);transform:translate(0)}90%{clip-path:inset(20% 0 60% 0);transform:translate(-3px,0)}92%{clip-path:inset(80% 0 5% 0);transform:translate(3px,0)}94%{clip-path:inset(40% 0 40% 0);transform:translate(-2px,0)}}
+@keyframes g2{0%,85%,100%{clip-path:inset(0 0 0 0);transform:translate(0)}87%{clip-path:inset(60% 0 20% 0);transform:translate(3px,0)}90%{clip-path:inset(10% 0 75% 0);transform:translate(-3px,0)}93%{clip-path:inset(85% 0 5% 0);transform:translate(2px,0)}}
+
+@media(max-width:860px){
+  .h-grid,.ag{grid-template-columns:1fr;gap:2rem;}
+  .nav-links{display:none;}
+  nav{padding:.8rem 1.3rem;}
+  .wrap{padding:0 1.2rem;}
+  section{padding:5rem 0;}
+  #cur,#cur-ring{display:none;}
+  body{cursor:auto;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<canvas id="cvs"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#home">[ SS ]</a>
+  <ul class="nav-links">
+    <li><a href="#about">Profile</a></li>
+    <li><a href="#skills">Systems</a></li>
+    <li><a href="#experience">Mission Log</a></li>
+    <li><a href="#projects">Ops</a></li>
+    <li><a href="#publications">Research</a></li>
+    <li><a href="#achievements">Awards</a></li>
+    <li><a href="#certifications">Creds</a></li>
+    <li><a href="#contact">Comms</a></li>
+  </ul>
+  <div class="nav-r"><div class="sdot"></div><span>SYSTEM ONLINE</span></div>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="wrap">
+    <div class="h-grid">
+      <div>
+        <div class="htag">// FULL-STACK AI ENGINEER · RESEARCHER · BENGALURU, INDIA</div>
+        <h1 class="hname">
+          <span class="f">SOMIL</span>
+          <span class="l glitch" data-text="SINGH.">SINGH.</span>
+        </h1>
+        <p class="hsub">Building <em>agentic AI systems</em> at Oracle. Researcher in NeRF, LLMs &amp; Computer Vision. Passionate about <em>autonomous systems</em>, algorithmic trading &amp; space exploration.</p>
+        <div class="hctas">
+          <a class="btn p" href="mailto:thesomilsinghofficial@gmail.com">▶ INITIATE CONTACT</a>
+          <a class="btn g" href="https://github.com/skywalkerrre" target="_blank">◈ GITHUB</a>
+          <a class="btn g" href="https://www.linkedin.com/in/somil-singh" target="_blank">◈ LINKEDIN</a>
+        </div>
+      </div>
+      <div class="hc hudp">
+        <div class="hudp-t">▸ OPERATOR PROFILE — SOMIL_SINGH</div>
+        <div class="hrow"><span class="hk">STATUS</span><span class="hv gr">● ACTIVE @ ORACLE</span></div>
+        <div class="hrow"><span class="hk">ROLE</span><span class="hv c">FULL-STACK AI ENG</span></div>
+        <div class="hrow"><span class="hk">LINES IN PROD</span><span class="hv">2,500+</span></div>
+        <div class="hrow"><span class="hk">AI EFFICIENCY GAIN</span><span class="hv c">35%</span></div>
+        <div class="hrow"><span class="hk">GRE SCORE</span><span class="hv go">335 / 340</span></div>
+        <div class="hrow"><span class="hk">TOEFL · C2</span><span class="hv">116 / 120</span></div>
+        <div class="hrow"><span class="hk">CHESS ELO</span><span class="hv">1340 INTL</span></div>
+        <div class="hrow"><span class="hk">DEFECTS IN PROD</span><span class="hv gr">0</span></div>
+        <div class="bar-w"><div class="bar-l"><span>FULL-STACK</span><span>92%</span></div><div class="bar"><div class="bar-f" style="--p:92%"></div></div></div>
+        <div class="bar-w"><div class="bar-l"><span>AGENTIC AI / LLM</span><span>88%</span></div><div class="bar"><div class="bar-f" style="--p:88%"></div></div></div>
+        <div class="bar-w"><div class="bar-l"><span>COMPUTER VISION</span><span>85%</span></div><div class="bar"><div class="bar-f" style="--p:85%"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow rv">Profile</div>
+    <div class="ag">
+      <div>
+        <h2 class="stitle rv">About <span>Me</span></h2>
+        <div class="atxt rv">
+          <p>I'm a <strong>Full-Stack AI Engineer</strong> at Oracle, Bengaluru, architecting and deploying end-to-end AI solutions — integrating LLMs and ML frameworks to enhance enterprise-level automation in Oracle PrimaVera Cloud.</p>
+          <p>My research roots are in <strong>Neural Radiance Fields</strong> at IISc Bangalore — novel view synthesis, differentiable rendering, and human pose estimation. I've also worked in CV at Samsung R&D, autonomous driving at Wipro PARI, and data science at Solar Secure Solutions.</p>
+          <p>I'm drawn to the edge where <strong>intelligence meets infrastructure</strong> — building systems that perceive, reason, and act. My growing passion lies at the intersection of <strong>quantitative finance</strong>, algorithmic trading, and space exploration.</p>
+          <p>Outside: <strong>NTSE scholar (AIR Top 1000)</strong>, international chess player (ELO 1340), multi-sport state-level athlete, and astronomy quiz winner.</p>
+        </div>
+      </div>
+      <div class="astats rv">
+        <div class="hc ast"><div class="astn">19</div><div class="astl">FRONTEND FEATURES SHIPPED IN ORACLE PVC</div></div>
+        <div class="hc ast"><div class="astn">35%</div><div class="astl">AI PIPELINE TIME EFFICIENCY GAIN</div></div>
+        <div class="hc ast"><div class="astn">335</div><div class="astl">GRE SCORE — 165Q, 169V (TOP PERCENTILE)</div></div>
+        <div class="hc ast"><div class="astn">18%</div><div class="astl">NeRF JOINT ERROR REDUCTION ON OOD DATA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="wrap">
+    <div class="eyebrow rv">Systems Manifest</div>
+    <h2 class="stitle rv">Technical <span>Skills</span></h2>
+    <div class="sg">
+      <div class="hc st rv"><div class="st-h">Languages</div><div class="tc"><span class="tg a">Python</span><span class="tg a">Java</span><span class="tg a">JavaScript</span></div></div>
+      <div class="hc st rv"><div class="st-h">Frameworks & Tools</div><div class="tc"><span class="tg b">React</span><span class="tg b">Spring</span><span class="tg b">Node.js</span><span class="tg b">Hibernate</span><span class="tg b">LangChain</span><span class="tg b">PyTorch</span><span class="tg b">TensorFlow</span><span class="tg b">Scikit-learn</span><span class="tg b">Pandas</span><span class="tg b">Hugging Face</span></div></div>
+      <div class="hc st rv"><div class="st-h">AI / ML Systems</div><div class="tc"><span class="tg a">NLP Pipelines</span><span class="tg a">RAG</span><span class="tg a">Agentic AI</span><span class="tg a">LLMs</span><span class="tg a">Generative AI</span><span class="tg a">Transformers</span><span class="tg a">NeRF</span></div></div>
+      <div class="hc st rv"><div class="st-h">Computer Vision</div><div class="tc"><span class="tg d">YOLOv4</span><span class="tg d">OpenCV</span><span class="tg d">SSD / FPN</span><span class="tg d">Ray Tracing</span><span class="tg d">SfM / SLAM</span><span class="tg d">BVH Accel.</span><span class="tg d">Volumetric Render</span><span class="tg d">pytesseract</span></div></div>
+      <div class="hc st rv"><div class="st-h">Cloud & DevOps</div><div class="tc"><span class="tg b">Oracle Cloud OCI</span><span class="tg b">Oracle OIC</span><span class="tg b">CI/CD</span><span class="tg b">Git / GitHub</span><span class="tg b">Arduino</span></div></div>
+      <div class="hc st rv"><div class="st-h">Interests & Domains</div><div class="tc"><span class="tg a">Quantitative Finance</span><span class="tg a">Algo Trading</span><span class="tg a">Space Exploration</span><span class="tg a">Autonomous Systems</span><span class="tg d">Data Science</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="wrap">
+    <div class="eyebrow rv">Mission Log</div>
+    <h2 class="stitle rv">Professional <span>Experience</span></h2>
+    <div class="el">
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">Full-Stack AI Engineer</div><div class="eo">▸ ORACLE — Bengaluru</div></div>
+          <div class="ed">Sep 2025 – Present<br><span class="badge">ACTIVE</span></div>
+        </div>
+        <ul class="ebl">
+          <li>Architecting and deploying <strong>end-to-end AI solutions</strong> within the Oracle ecosystem.</li>
+          <li>Integrating <strong>LLMs and advanced ML frameworks</strong> to enhance enterprise-level automation and data processing.</li>
+        </ul>
+        <div class="chips"><span class="chip">LLMs</span><span class="chip">Agentic AI</span><span class="chip">OCI</span><span class="chip">Enterprise AI</span></div>
+      </div>
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">Associate Software Developer · Full-Stack AI Engineer</div><div class="eo">▸ ORACLE — Bengaluru</div></div>
+          <div class="ed">Jan 2024 – Sep 2025</div>
+        </div>
+        <ul class="ebl">
+          <li>Owned design and development of <strong>19 Javascript frontend features</strong> with Java-Spring based backend from scratch in <strong>Oracle PrimaVera Cloud (OPC)</strong>, improving workflow responsiveness by <strong>28%</strong> and maintaining <strong>0 post-release defects</strong>.</li>
+          <li>Authored and executed <strong>25 customer and internal bugs</strong> for high-impact scenarios such as <strong>Resource Management</strong> and <strong>Schedule Comparison</strong>, and pushed over <strong>2500 lines of code</strong> into production with full CI/CD ownership.</li>
+          <li>Designed an <strong>AI pipeline for LLM-based RPF summarization and schedule generation</strong>, enabling automation of construction workflows from unstructured input data and improving estimated time efficiency by <strong>35%</strong>.</li>
+          <li>Engineered key modular unit for <strong>agentic AI planning flow</strong> and learnt React.js in <strong>3 days</strong> to build the schedule generation UI in a week, significantly impressing stakeholders.</li>
+          <li>Led PoC analysis of using <strong>Oracle Integration Cloud (OIC) with OPC</strong> to enable agentic AI workflows via low-code orchestration, earning <strong>high-level recognition from senior leadership</strong> for innovation impact.</li>
+        </ul>
+        <div class="chips"><span class="chip">JavaScript</span><span class="chip">Java Spring</span><span class="chip">React.js</span><span class="chip">LLMs</span><span class="chip">Agentic AI</span><span class="chip">OCI</span><span class="chip">OIC</span><span class="chip">CI/CD</span></div>
+      </div>
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">AI Research Intern</div><div class="eo">▸ IISc BANGALORE</div></div>
+          <div class="ed">Jul 2023 – Dec 2023 · 6 mos</div>
+        </div>
+        <ul class="ebl">
+          <li>Researched <strong>Neural Radiance Fields (NeRF)</strong> for novel view synthesis using sparse multi-view data and differentiable ray tracing.</li>
+          <li>Utilised Plenoptic Functions to model <strong>7D scene representations</strong>, enabling realistic human pose estimation and reducing <strong>mean joint-position error by 18%</strong> on OOD datasets.</li>
+          <li>Integrated <strong>camera calibration techniques (SfM/SLAM)</strong> for ray tracing and hierarchical sampling in 3D scene reconstruction.</li>
+          <li>Addressed visual aliasing using <strong>supersampling (via BVH acceleration)</strong> and pre-filtering strategies to refine model accuracy while maintaining <strong>real-time inference (12 fps)</strong>.</li>
+          <li>Synthesized core ideas in <strong>volumetric rendering, lightfield modelling and ray sampling pipelines</strong> into a working implementation of over 1000 lines, validated on 3 public datasets (Blender, LLFF, DTU).</li>
+        </ul>
+        <div class="chips"><span class="chip">NeRF</span><span class="chip">PyTorch</span><span class="chip">Ray Tracing</span><span class="chip">SfM/SLAM</span><span class="chip">3D Vision</span></div>
+      </div>
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">Computer Vision Research Intern</div><div class="eo">▸ SAMSUNG R&D INSTITUTE INDIA</div></div>
+          <div class="ed">May 2023 – Oct 2023 · 6 mos</div>
+        </div>
+        <ul class="ebl">
+          <li>Spearheaded a team of 4 to implement a <strong>Deep Neural Network pipeline</strong> for generating intermediate frames between two input frames, enabling smoother slow-motion effects and enhanced video continuity.</li>
+          <li>Benchmarked on Vimeo90K — improved <strong>PSNR/SSIM over DAIN and SepConv by 8.5%</strong> via CUDA optimisation, responsible for more than 65% of the coding process.</li>
+          <li>Acted as <strong>student representative</strong>, maintaining communication with Samsung, timely delegation of tasks and ensuring smooth collaboration throughout the project duration.</li>
+        </ul>
+        <div class="chips"><span class="chip">Deep Learning</span><span class="chip">CUDA</span><span class="chip">PyTorch</span><span class="chip">Vimeo90K</span><span class="chip">Video AI</span></div>
+      </div>
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">Data Science Intern</div><div class="eo">▸ SOLAR SECURE SOLUTIONS</div></div>
+          <div class="ed">Jan 2023 – Mar 2023 · 3 mos</div>
+        </div>
+        <ul class="ebl">
+          <li>Built and optimised ML models in Python, improving predictive accuracy by <strong>20%</strong> and automating data preprocessing to cut manual effort by <strong>30%</strong>.</li>
+        </ul>
+        <div class="chips"><span class="chip">Python</span><span class="chip">ML</span><span class="chip">Data Science</span><span class="chip">Automation</span></div>
+      </div>
+
+      <div class="hc ei rv">
+        <div class="et">
+          <div><div class="er">AI Research Intern</div><div class="eo">▸ WIPRO PARI — Autonomous Driving</div></div>
+          <div class="ed">Nov 2022 – Mar 2023 · 5 mos</div>
+        </div>
+        <ul class="ebl">
+          <li>Implemented a customised <strong>Single Shot Detector (SSD)</strong> using the Wirin dataset for object detection in autonomous driving scenarios — <strong>55–75% accuracy</strong> on real-world traffic datasets.</li>
+          <li>Improved <strong>Feature Pyramid Network (FPN)</strong> to incorporate multi-scale feature fusion, vital in improving detection of small and overlapping objects across dense traffic frames.</li>
+          <li>Built and tuned the pipeline from <strong>data-preprocessing and anchor box design to model optimisation</strong>, laying the foundation for passion in Computer Vision and AI.</li>
+        </ul>
+        <div class="chips"><span class="chip">SSD</span><span class="chip">FPN</span><span class="chip">Computer Vision</span><span class="chip">Autonomous Driving</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="wrap">
+    <div class="eyebrow rv">Operations</div>
+    <h2 class="stitle rv">Projects</h2>
+    <div class="pg">
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">🎯</div><span class="pp">NOV – DEC 2023</span></div>
+        <div class="pn">Object Classification & Tracking</div>
+        <div class="pdesc">Real-time pipeline using YOLOv4, TensorFlow and OpenCV achieving sub-30ms inference. Combines selective class tracking with dynamic frame-based cropping for 75–95% accuracy on high-speed video streams.</div>
+        <div class="ptags"><span class="ptag">YOLOv4</span><span class="ptag">TensorFlow</span><span class="ptag">OpenCV</span><span class="ptag">Python</span></div>
+        <div class="pub-b">📄 Published — IJISRT Vol.8, Issue 8 · Aug 2023</div>
+      </div>
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">🛡️</div><span class="pp">2023</span></div>
+        <div class="pn">Cyber Security Recon Tools</div>
+        <div class="pdesc">Remote OS and open port detection to identify system vulnerabilities. Built for security analysis and network reconnaissance scenarios.</div>
+        <div class="ptags"><span class="ptag">Python</span><span class="ptag">Networking</span><span class="ptag">Security</span><span class="ptag">Port Scanning</span></div>
+      </div>
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">🚗</div><span class="pp">2022</span></div>
+        <div class="pn">ANPR — Indian Vehicle Plates</div>
+        <div class="pdesc">Automatic License Number Plate Recognition using OCR (pytesseract) with Twilio integration for real-time mobile SMS alerts, built for Indian road conditions.</div>
+        <div class="ptags"><span class="ptag">pytesseract</span><span class="ptag">OCR</span><span class="ptag">Twilio</span><span class="ptag">OpenCV</span></div>
+      </div>
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">👗</div><span class="pp">2021</span></div>
+        <div class="pn">Fashion MNIST Classification</div>
+        <div class="pdesc">CNN model classifying apparel across 10 categories with high precision on the Fashion MNIST benchmark dataset.</div>
+        <div class="ptags"><span class="ptag">CNN</span><span class="ptag">TensorFlow</span><span class="ptag">Fashion MNIST</span><span class="ptag">Python</span></div>
+      </div>
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">🅿️</div><span class="pp">2021</span></div>
+        <div class="pn">RFID Smart Parking System</div>
+        <div class="pdesc">Arduino-based RFID authentication system for office and apartment entry management. Hardware + firmware integration for secure access control.</div>
+        <div class="ptags"><span class="ptag">Arduino</span><span class="ptag">RFID</span><span class="ptag">C++</span><span class="ptag">IoT</span></div>
+      </div>
+      <div class="hc pc rv">
+        <div class="pt"><div class="pi">🎮</div><span class="pp">MAY – OCT 2023</span></div>
+        <div class="pn">Samsung Prism · Frame Interpolation</div>
+        <div class="pdesc">Led team of 4 in a DNN pipeline for intermediate frame generation. Improved PSNR/SSIM over DAIN &amp; SepConv by 8.5% via CUDA on Vimeo90K benchmark.</div>
+        <div class="ptags"><span class="ptag">Deep Learning</span><span class="ptag">CUDA</span><span class="ptag">PyTorch</span><span class="ptag">Vimeo90K</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="wrap">
+    <div class="eyebrow rv">Research Output</div>
+    <h2 class="stitle rv">Publications</h2>
+    <div class="pu-list">
+      <div class="hc pu rv">
+        <div class="pu-n">◈ PAPER — 01</div>
+        <a class="pu-title-link" href="https://www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects" target="_blank" rel="noopener">
+          <div class="pu-title">Object Detection, Classification and Tracking of Everyday Common Objects <span class="pu-ext">↗</span></div>
+        </a>
+        <div class="pu-auth">Somil Singh, Shivansh Bharghav</div>
+        <div class="pu-venue">IJISRT · Vol.8, Issue 8, Aug 2023 · Issue No: 2456-2165</div>
+        <a class="pu-url" href="https://www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects" target="_blank" rel="noopener">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#00ffe7" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          <span class="pu-url-text">www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects</span>
+          <span style="color:#00ffe7;opacity:.7;font-family:'Share Tech Mono',monospace;font-size:.7rem;">↗</span>
+        </a>
+        <a class="pu-btn" href="https://www.ijisrt.com/object-detection-classification-and-tracking-of-everyday-common-objects" target="_blank" rel="noopener">▶ VIEW PAPER</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEST SCORES -->
+<section id="testscores">
+  <div class="wrap">
+    <div class="eyebrow rv">Assessments</div>
+    <h2 class="stitle rv">Test <span>Scores</span></h2>
+    <div class="ts-grid">
+      <div class="hc ts-card rv">
+        <div class="ts-exam">GRE</div>
+        <div class="ts-score">335<span class="ts-total"> / 340</span></div>
+        <div class="ts-subs">
+          <div class="ts-sub"><span class="ts-sub-name">QUANTITATIVE</span><span class="ts-sub-val">165 / 170</span></div>
+          <div class="ts-sub"><span class="ts-sub-name">VERBAL</span><span class="ts-sub-val">169 / 170</span></div>
+        </div>
+      </div>
+      <div class="hc ts-card rv">
+        <div class="ts-exam">TOEFL iBT <span class="ts-badge">C2 PROFICIENT</span></div>
+        <div class="ts-score">116<span class="ts-total"> / 120</span></div>
+        <div class="ts-subs">
+          <div class="ts-sub"><span class="ts-sub-name">READING</span><span class="ts-sub-val">29</span></div>
+          <div class="ts-sub"><span class="ts-sub-name">LISTENING</span><span class="ts-sub-val">29</span></div>
+          <div class="ts-sub"><span class="ts-sub-name">SPEAKING</span><span class="ts-sub-val">28</span></div>
+          <div class="ts-sub"><span class="ts-sub-name">WRITING</span><span class="ts-sub-val">30</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="wrap">
+    <div class="eyebrow rv">Academic Record</div>
+    <h2 class="stitle rv">Education</h2>
+    <div class="edu-g">
+      <div class="hc edu-i rv">
+        <div class="edu-d">B.E. in Computer Science Engineering (CSE)</div>
+        <div class="edu-s">RV COLLEGE OF ENGINEERING (RVCE)</div>
+        <div class="edu-y">Dec 2020 – Aug 2024 · Bengaluru</div>
+        <div class="edu-gr">8.62 / 10 · First Class with Distinction</div>
+        <div class="edu-extras"><span>Focus: AI, Machine Learning, Computer Vision</span></div>
+      </div>
+      <div class="hc edu-i rv">
+        <div class="edu-d">High School Diploma</div>
+        <div class="edu-s">NATIONAL PUBLIC SCHOOL, INDIRANAGAR</div>
+        <div class="edu-y">Bengaluru · CBSE</div>
+        <div style="margin-top:.85rem;">
+          <div class="edu-gr">10th Std · 96.8%</div>
+          <div class="edu-gr">12th Std · 85.6%</div>
+        </div>
+        <div class="edu-extras"><span>NTSE Final Round — AIR Top 1000 (Scholarship)</span></div>
+      </div>
+      <div class="hc edu-i rv">
+        <div class="edu-d">High School</div>
+        <div class="edu-s">CAMPION SCHOOL, MUMBAI</div>
+        <div class="edu-extras">
+          <span>All-Rounder Award (2015, 2016)</span>
+          <span>Astronomy Quiz Competition Winner (2015)</span>
+          <span>Chess SMCA Group A Winner (2010–2015)</span>
+          <span>Football &amp; Basketball Winner (2008–2016)</span>
+          <span>Badminton DSO 4th Place (2016)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="wrap">
+    <div class="eyebrow rv">Commendations</div>
+    <h2 class="stitle rv">Achievements <span>&amp;</span> Awards</h2>
+    <div class="ach-g">
+      <div class="hc ach-i rv"><div class="ach-gl">🏅</div><div><div class="ach-nm">NTSE — AIR Top 1000</div><div class="ach-dt">National Talent Search Examination · Scholarship Recipient</div></div></div>
+      <div class="hc ach-i rv"><div class="ach-gl">♟</div><div><div class="ach-nm">International Chess ELO 1340</div><div class="ach-dt">8th Place Maharashtra State Level (U-8) · SMCA Group A Winner</div></div></div>
+      <div class="hc ach-i rv"><div class="ach-gl">🏆</div><div><div class="ach-nm">All-Rounder Award</div><div class="ach-dt">Campion School, Mumbai · 2015 &amp; 2016</div></div></div>
+      <div class="hc ach-i rv"><div class="ach-gl">🔭</div><div><div class="ach-nm">Astronomy Quiz Winner</div><div class="ach-dt">Campion School, Mumbai · 2015</div></div></div>
+      <div class="hc ach-i rv"><div class="ach-gl">🔤</div><div><div class="ach-nm">MaRRS Spelling Bee — State Finalist</div><div class="ach-dt">State Level Competition · May 2016</div></div></div>
+      <div class="hc ach-i rv"><div class="ach-gl">⚽</div><div><div class="ach-nm">Multi-Sport Athlete</div><div class="ach-dt">State: Football, Basketball · District: Cricket, Badminton, Tennis</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- VOLUNTEERING -->
+<section id="volunteering">
+  <div class="wrap">
+    <div class="eyebrow rv">Service</div>
+    <h2 class="stitle rv">Volunteering</h2>
+    <div class="hc vi rv">
+      <div class="vr">Design Team Member</div>
+      <div class="vo">▸ NSS CLUB — RVCCE · Nov 2022 – Jun 2024</div>
+      <ul class="vbl">
+        <li>Led creative and communications team for <strong>10+ city-wide campaigns</strong> on women's safety, public health, and environmental awareness.</li>
+        <li>Designed visually compelling posters and digital media for offline rallies and large-scale social media drives, maximising outreach.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="wrap">
+    <div class="eyebrow rv">Credentials</div>
+    <h2 class="stitle rv">Certifications</h2>
+    <div class="cg">
+      <div class="hc cr rv"><div class="ci">☁</div><div><div class="cn">OCI 2025 Certified Generative AI Professional</div><div class="co">ORACLE · 2025</div><div class="cid">ID: 315671049OCI25GAIOCP</div></div></div>
+      <div class="hc cr rv"><div class="ci">🔷</div><div><div class="cn">OCI 2025 Certified Foundations Associate</div><div class="co">ORACLE · 2025</div><div class="cid">ID: 315671049OCI25FNDCFA</div></div></div>
+      <div class="hc cr rv"><div class="ci">🤖</div><div><div class="cn">OCI 2025 Certified AI Foundations Associate</div><div class="co">ORACLE · 2025</div><div class="cid">ID: 15671049OCI25AICFA</div></div></div>
+      <div class="hc cr rv"><div class="ci">🤖</div><div><div class="cn">OCI 2024 Certified AI Foundations Associate</div><div class="co">ORACLE · 2024</div><div class="cid">ID: 315671049OCI24AICFA</div></div></div>
+      <div class="hc cr rv"><div class="ci">☕</div><div><div class="cn">Practical Test-Driven Development for Java</div><div class="co">LINKEDIN LEARNING · 2024</div></div></div>
+      <div class="hc cr rv"><div class="ci">🧠</div><div><div class="cn">Building Deep Learning Models with TensorFlow</div><div class="co">COURSERA · 2025</div></div></div>
+      <div class="hc cr rv"><div class="ci">🐍</div><div><div class="cn">Python for Data Science &amp; ML Bootcamp</div><div class="co">UDEMY</div><div class="cid">ID: UC-14ea9a48-8670-47a7-be40-dd4636c37c7b</div></div></div>
+      <div class="hc cr rv"><div class="ci">📊</div><div><div class="cn">Data Science Internship (Govt of India MSME)</div><div class="co">SOLAR SECURE SOLUTIONS</div><div class="cid">ID: UDYAM-UP-43-0012205</div></div></div>
+      <div class="hc cr rv"><div class="ci">📖</div><div><div class="cn">CS336: Language Modelling from Scratch</div><div class="co">STANFORD ONLINE · 2025</div></div></div>
+      <div class="hc cr rv"><div class="ci">💬</div><div><div class="cn">CS224N: NLP with Deep Learning</div><div class="co">STANFORD ONLINE · 2024</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <div class="cw">
+      <div class="eyebrow rv" style="justify-content:center;">Comms</div>
+      <h2 class="stitle rv" style="text-align:center;">Open <span>Channel</span></h2>
+      <p class="csub rv">Available for research collaborations, engineering challenges, and conversations at the frontier of AI, quant finance, and autonomous systems.</p>
+      <div class="cbtns rv">
+        <a class="cbtn" href="mailto:thesomilsinghofficial@gmail.com">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+          EMAIL
+        </a>
+        <a class="cbtn" href="https://github.com/skywalkerrre" target="_blank">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GITHUB
+        </a>
+        <a class="cbtn" href="https://www.linkedin.com/in/somil-singh" target="_blank">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LINKEDIN
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fc">SOMIL <span>SINGH</span> · BENGALURU, INDIA</div>
+  <div class="fc">12.9716° N · 77.5946° E · <span>SYSTEM NOMINAL</span></div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   INTERACTIVE SPACE BACKGROUND
+   Nebulae + Black Holes + Stars + Drones
+   z-index:1 — only visible through transparent #home
+═══════════════════════════════════════════════════ */
+(function() {
+  var canvas = document.getElementById('cvs');
+  var ctx = canvas.getContext('2d');
+  var W, H;
+  var mouse = { x: -999, y: -999 };
+  var stars = [], nebulae = [], blackHoles = [], particles = [], drones = [];
+  var t = 0;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    for (var i = 0; i < 480; i++) {
+      var big = Math.random() < 0.04;
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: big ? Math.random() * 2.4 + 1.4 : Math.random() * 0.95 + 0.18,
+        a: Math.random() * 0.65 + 0.35,
+        tw: Math.random() * 0.022 + 0.004,
+        ph: Math.random() * Math.PI * 2,
+        cr: Math.random() < 0.14 ? 0 : Math.random() < 0.1 ? 100 : 220,
+        cg: Math.random() < 0.14 ? 255 : Math.random() < 0.1 ? 210 : 235,
+        cb: Math.random() < 0.14 ? 231 : Math.random() < 0.1 ? 255 : 255
+      });
+    }
+  }
+
+  function initNebulae() {
+    nebulae = [
+      { x: 0.14 * W, y: 0.18 * H, rx: 360, ry: 240, hue: 185, a: 0.14 },
+      { x: 0.87 * W, y: 0.52 * H, rx: 300, ry: 360, hue: 270, a: 0.10 },
+      { x: 0.50 * W, y: 0.90 * H, rx: 400, ry: 210, hue: 200, a: 0.12 },
+      { x: 0.74 * W, y: 0.10 * H, rx: 240, ry: 290, hue: 32,  a: 0.09 }
+    ];
+  }
+
+  function initBlackHoles() {
+    blackHoles = [
+      { x: 0.82 * W, y: 0.30 * H, r: 36, accR: 155, rot: 0,        speed: 0.004, hue: 30  },
+      { x: 0.17 * W, y: 0.72 * H, r: 26, accR: 115, rot: Math.PI,  speed: 0.006, hue: 185 }
+    ];
+    particles = [];
+    for (var bi = 0; bi < blackHoles.length; bi++) {
+      var bh = blackHoles[bi];
+      for (var i = 0; i < 130; i++) {
+        var ang = Math.random() * Math.PI * 2;
+        var dist = bh.r * 1.5 + Math.random() * bh.accR * 0.82;
+        particles.push({
+          bh: bi, angle: ang, dist: dist,
+          speed: (0.010 + Math.random() * 0.016) * (dist < bh.r * 3 ? 1.6 : 1),
+          r: Math.random() * 1.1 + 0.25,
+          a: Math.random() * 0.65 + 0.35,
+          hue: bh.hue + Math.random() * 40
+        });
+      }
+    }
+  }
+
+  function initDrones() {
+    drones = [];
+    for (var i = 0; i < 5; i++) {
+      drones.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.75,
+        vy: (Math.random() - 0.5) * 0.75,
+        trail: [], maxT: 26,
+        sz: 1.4 + Math.random() * 0.8
+      });
+    }
+  }
+
+  function init() {
+    initStars();
+    initNebulae();
+    initBlackHoles();
+    initDrones();
+  }
+
+  window.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  function drawBg() {
+    var g = ctx.createRadialGradient(W * 0.5, H * 0.38, 0, W * 0.5, H * 0.38, W * 0.95);
+    g.addColorStop(0,    '#050d26');
+    g.addColorStop(0.45, '#030918');
+    g.addColorStop(0.8,  '#020610');
+    g.addColorStop(1,    '#000208');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function drawNebulae() {
+    for (var i = 0; i < nebulae.length; i++) {
+      var n = nebulae[i];
+      ctx.save();
+      ctx.translate(n.x, n.y);
+      ctx.scale(1, n.ry / n.rx);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, n.rx);
+      g.addColorStop(0,    'hsla(' + n.hue + ',92%,65%,' + (n.a * 3.0) + ')');
+      g.addColorStop(0.28, 'hsla(' + n.hue + ',85%,55%,' + (n.a * 1.8) + ')');
+      g.addColorStop(0.60, 'hsla(' + n.hue + ',75%,45%,' + (n.a * 0.8) + ')');
+      g.addColorStop(1,    'transparent');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, n.rx, 0, Math.PI * 2);
+      ctx.fill();
+      // Bright core
+      var g2 = ctx.createRadialGradient(0, 0, 0, 0, 0, n.rx * 0.32);
+      g2.addColorStop(0, 'hsla(' + (n.hue + 18) + ',100%,82%,' + (n.a * 1.4) + ')');
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(0, 0, n.rx * 0.32, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawStars() {
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var tw = Math.sin(t * s.tw * 60 + s.ph) * 0.3 + 0.7;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (s.a * tw) + ')';
+      ctx.fill();
+      if (s.r > 1.3) {
+        ctx.strokeStyle = 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (s.a * tw * 0.32) + ')';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(s.x - s.r * 5, s.y); ctx.lineTo(s.x + s.r * 5, s.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s.x, s.y - s.r * 5); ctx.lineTo(s.x, s.y + s.r * 5); ctx.stroke();
+        var g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 7);
+        g.addColorStop(0, 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (0.22 * tw) + ')');
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 7, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function drawBlackHoles() {
+    for (var bi = 0; bi < blackHoles.length; bi++) {
+      var bh = blackHoles[bi];
+      bh.rot += bh.speed;
+
+      // Gravitational lensing rings
+      for (var ring = 3; ring >= 1; ring--) {
+        var rr = bh.r * (1 + ring * 0.55);
+        var alpha = 0.13 / ring;
+        var gr = ctx.createRadialGradient(bh.x, bh.y, rr * 0.55, bh.x, bh.y, rr * 1.35);
+        gr.addColorStop(0, 'hsla(' + bh.hue + ',100%,72%,' + (alpha * 2.2) + ')');
+        gr.addColorStop(0.5, 'hsla(' + bh.hue + ',90%,60%,' + alpha + ')');
+        gr.addColorStop(1, 'transparent');
+        ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.arc(bh.x, bh.y, rr * 1.35, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Accretion disk particles
+      for (var pi = 0; pi < particles.length; pi++) {
+        var p = particles[pi];
+        if (p.bh !== bi) continue;
+        p.angle += p.speed;
+        var px = bh.x + Math.cos(p.angle + bh.rot) * p.dist;
+        var py = bh.y + Math.sin(p.angle + bh.rot) * p.dist * 0.3;
+        var br = Math.max(0, 1 - p.dist / (bh.accR * 1.12));
+        ctx.beginPath();
+        ctx.arc(px, py, p.r * br, 0, Math.PI * 2);
+        ctx.fillStyle = 'hsla(' + p.hue + ',100%,76%,' + (p.a * br * 0.92) + ')';
+        ctx.fill();
+      }
+
+      // Event horizon (black centre)
+      var cg = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.r * 2.2);
+      cg.addColorStop(0,   'rgba(0,0,0,1)');
+      cg.addColorStop(0.65,'rgba(0,0,0,0.95)');
+      cg.addColorStop(1,   'transparent');
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(bh.x, bh.y, bh.r * 2.2, 0, Math.PI * 2); ctx.fill();
+
+      // Mouse hover flare
+      var dx = mouse.x - bh.x, dy = mouse.y - bh.y;
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if (d < bh.accR * 1.7) {
+        var intens = (1 - d / (bh.accR * 1.7)) * 0.65;
+        var wg = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.accR * 1.1);
+        wg.addColorStop(0,   'hsla(' + bh.hue + ',100%,82%,' + (intens * 0.55) + ')');
+        wg.addColorStop(0.4, 'hsla(' + bh.hue + ',90%,62%,' + (intens * 0.28) + ')');
+        wg.addColorStop(1,   'transparent');
+        ctx.fillStyle = wg;
+        ctx.beginPath(); ctx.arc(bh.x, bh.y, bh.accR * 1.1, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function drawDrones() {
+    for (var i = 0; i < drones.length; i++) {
+      var d = drones[i];
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < 0 || d.x > W) d.vx *= -1;
+      if (d.y < 0 || d.y > H) d.vy *= -1;
+      d.trail.push({ x: d.x, y: d.y });
+      if (d.trail.length > d.maxT) d.trail.shift();
+      for (var j = 1; j < d.trail.length; j++) {
+        ctx.beginPath();
+        ctx.moveTo(d.trail[j-1].x, d.trail[j-1].y);
+        ctx.lineTo(d.trail[j].x, d.trail[j].y);
+        ctx.strokeStyle = 'rgba(0,255,231,' + ((j / d.trail.length) * 0.38) + ')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.sz, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,255,231,0.88)'; ctx.fill();
+      var dg = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.sz * 6);
+      dg.addColorStop(0, 'rgba(0,255,231,0.18)'); dg.addColorStop(1, 'transparent');
+      ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(d.x, d.y, d.sz * 6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawScan() {
+    var sy = (t * 18) % H;
+    var sg = ctx.createLinearGradient(0, sy - 4, 0, sy + 4);
+    sg.addColorStop(0, 'transparent');
+    sg.addColorStop(0.5, 'rgba(0,255,231,0.022)');
+    sg.addColorStop(1, 'transparent');
+    ctx.fillStyle = sg; ctx.fillRect(0, sy - 4, W, 8);
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    t += 0.013;
+    drawBg();
+    drawNebulae();
+    drawStars();
+    drawBlackHoles();
+    drawDrones();
+    drawScan();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', function() { resize(); init(); });
+  resize();
+  init();
+  loop();
+})();
+
+/* ═══ CURSOR ═══ */
+var cur = document.getElementById('cur');
+var ring = document.getElementById('cur-ring');
+window.addEventListener('mousemove', function(e) {
+  cur.style.left  = e.clientX + 'px';
+  cur.style.top   = e.clientY + 'px';
+  ring.style.left = e.clientX + 'px';
+  ring.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a,button').forEach(function(el) {
+  el.addEventListener('mouseenter', function() {
+    ring.style.width = '52px'; ring.style.height = '52px';
+    ring.style.borderColor = 'rgba(0,255,231,1)';
+  });
+  el.addEventListener('mouseleave', function() {
+    ring.style.width = '36px'; ring.style.height = '36px';
+    ring.style.borderColor = 'rgba(0,255,231,.55)';
+  });
+});
+
+/* ═══ SCROLL REVEAL ═══ */
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.rv').forEach(function(el) { obs.observe(el); });
+
+/* ═══ NAV ACTIVE ═══ */
+var secs = document.querySelectorAll('section[id]');
+var navAs = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', function() {
+  var cur2 = '';
+  secs.forEach(function(s) { if (window.scrollY >= s.offsetTop - 130) cur2 = s.id; });
+  navAs.forEach(function(a) {
+    var on = a.getAttribute('href') === '#' + cur2;
+    a.style.color = on ? '#00ffe7' : '';
+    if (on) a.classList.add('act'); else a.classList.remove('act');
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Somil Singh — Full-Stack AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
 /* ═══════════════════════════════════════
    RESET
 ═══════════════════════════════════════ */
