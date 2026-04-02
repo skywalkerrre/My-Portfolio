@@ -636,3 +636,304 @@ footer{border-top:1px solid rgba(0,255,231,.12);padding:1.3rem 2.4rem;z-index:10
   <div class="fc">SOMIL <span>SINGH</span> · BENGALURU, INDIA</div>
   <div class="fc">12.9716° N · 77.5946° E · <span>SYSTEM NOMINAL</span></div>
 </footer>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   INTERACTIVE SPACE BACKGROUND
+   Nebulae + Black Holes + Stars + Drones
+   z-index:1 — only visible through transparent #home
+═══════════════════════════════════════════════════ */
+(function() {
+  var canvas = document.getElementById('cvs');
+  var ctx = canvas.getContext('2d');
+  var W, H;
+  var mouse = { x: -999, y: -999 };
+  var stars = [], nebulae = [], blackHoles = [], particles = [], drones = [];
+  var t = 0;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    for (var i = 0; i < 480; i++) {
+      var big = Math.random() < 0.04;
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: big ? Math.random() * 2.4 + 1.4 : Math.random() * 0.95 + 0.18,
+        a: Math.random() * 0.65 + 0.35,
+        tw: Math.random() * 0.022 + 0.004,
+        ph: Math.random() * Math.PI * 2,
+        cr: Math.random() < 0.14 ? 0 : Math.random() < 0.1 ? 100 : 220,
+        cg: Math.random() < 0.14 ? 255 : Math.random() < 0.1 ? 210 : 235,
+        cb: Math.random() < 0.14 ? 231 : Math.random() < 0.1 ? 255 : 255
+      });
+    }
+  }
+
+  function initNebulae() {
+    nebulae = [
+      { x: 0.14 * W, y: 0.18 * H, rx: 360, ry: 240, hue: 185, a: 0.14 },
+      { x: 0.87 * W, y: 0.52 * H, rx: 300, ry: 360, hue: 270, a: 0.10 },
+      { x: 0.50 * W, y: 0.90 * H, rx: 400, ry: 210, hue: 200, a: 0.12 },
+      { x: 0.74 * W, y: 0.10 * H, rx: 240, ry: 290, hue: 32,  a: 0.09 }
+    ];
+  }
+
+  function initBlackHoles() {
+    blackHoles = [
+      { x: 0.82 * W, y: 0.30 * H, r: 36, accR: 155, rot: 0,        speed: 0.004, hue: 30  },
+      { x: 0.17 * W, y: 0.72 * H, r: 26, accR: 115, rot: Math.PI,  speed: 0.006, hue: 185 }
+    ];
+    particles = [];
+    for (var bi = 0; bi < blackHoles.length; bi++) {
+      var bh = blackHoles[bi];
+      for (var i = 0; i < 130; i++) {
+        var ang = Math.random() * Math.PI * 2;
+        var dist = bh.r * 1.5 + Math.random() * bh.accR * 0.82;
+        particles.push({
+          bh: bi, angle: ang, dist: dist,
+          speed: (0.010 + Math.random() * 0.016) * (dist < bh.r * 3 ? 1.6 : 1),
+          r: Math.random() * 1.1 + 0.25,
+          a: Math.random() * 0.65 + 0.35,
+          hue: bh.hue + Math.random() * 40
+        });
+      }
+    }
+  }
+
+  function initDrones() {
+    drones = [];
+    for (var i = 0; i < 5; i++) {
+      drones.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.75,
+        vy: (Math.random() - 0.5) * 0.75,
+        trail: [], maxT: 26,
+        sz: 1.4 + Math.random() * 0.8
+      });
+    }
+  }
+
+  function init() {
+    initStars();
+    initNebulae();
+    initBlackHoles();
+    initDrones();
+  }
+
+  window.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  function drawBg() {
+    var g = ctx.createRadialGradient(W * 0.5, H * 0.38, 0, W * 0.5, H * 0.38, W * 0.95);
+    g.addColorStop(0,    '#050d26');
+    g.addColorStop(0.45, '#030918');
+    g.addColorStop(0.8,  '#020610');
+    g.addColorStop(1,    '#000208');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function drawNebulae() {
+    for (var i = 0; i < nebulae.length; i++) {
+      var n = nebulae[i];
+      ctx.save();
+      ctx.translate(n.x, n.y);
+      ctx.scale(1, n.ry / n.rx);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, n.rx);
+      g.addColorStop(0,    'hsla(' + n.hue + ',92%,65%,' + (n.a * 3.0) + ')');
+      g.addColorStop(0.28, 'hsla(' + n.hue + ',85%,55%,' + (n.a * 1.8) + ')');
+      g.addColorStop(0.60, 'hsla(' + n.hue + ',75%,45%,' + (n.a * 0.8) + ')');
+      g.addColorStop(1,    'transparent');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, n.rx, 0, Math.PI * 2);
+      ctx.fill();
+      // Bright core
+      var g2 = ctx.createRadialGradient(0, 0, 0, 0, 0, n.rx * 0.32);
+      g2.addColorStop(0, 'hsla(' + (n.hue + 18) + ',100%,82%,' + (n.a * 1.4) + ')');
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(0, 0, n.rx * 0.32, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawStars() {
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var tw = Math.sin(t * s.tw * 60 + s.ph) * 0.3 + 0.7;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (s.a * tw) + ')';
+      ctx.fill();
+      if (s.r > 1.3) {
+        ctx.strokeStyle = 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (s.a * tw * 0.32) + ')';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(s.x - s.r * 5, s.y); ctx.lineTo(s.x + s.r * 5, s.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s.x, s.y - s.r * 5); ctx.lineTo(s.x, s.y + s.r * 5); ctx.stroke();
+        var g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 7);
+        g.addColorStop(0, 'rgba(' + s.cr + ',' + s.cg + ',' + s.cb + ',' + (0.22 * tw) + ')');
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 7, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function drawBlackHoles() {
+    for (var bi = 0; bi < blackHoles.length; bi++) {
+      var bh = blackHoles[bi];
+      bh.rot += bh.speed;
+
+      // Gravitational lensing rings
+      for (var ring = 3; ring >= 1; ring--) {
+        var rr = bh.r * (1 + ring * 0.55);
+        var alpha = 0.13 / ring;
+        var gr = ctx.createRadialGradient(bh.x, bh.y, rr * 0.55, bh.x, bh.y, rr * 1.35);
+        gr.addColorStop(0, 'hsla(' + bh.hue + ',100%,72%,' + (alpha * 2.2) + ')');
+        gr.addColorStop(0.5, 'hsla(' + bh.hue + ',90%,60%,' + alpha + ')');
+        gr.addColorStop(1, 'transparent');
+        ctx.fillStyle = gr;
+        ctx.beginPath(); ctx.arc(bh.x, bh.y, rr * 1.35, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Accretion disk particles
+      for (var pi = 0; pi < particles.length; pi++) {
+        var p = particles[pi];
+        if (p.bh !== bi) continue;
+        p.angle += p.speed;
+        var px = bh.x + Math.cos(p.angle + bh.rot) * p.dist;
+        var py = bh.y + Math.sin(p.angle + bh.rot) * p.dist * 0.3;
+        var br = Math.max(0, 1 - p.dist / (bh.accR * 1.12));
+        ctx.beginPath();
+        ctx.arc(px, py, p.r * br, 0, Math.PI * 2);
+        ctx.fillStyle = 'hsla(' + p.hue + ',100%,76%,' + (p.a * br * 0.92) + ')';
+        ctx.fill();
+      }
+
+      // Event horizon (black centre)
+      var cg = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.r * 2.2);
+      cg.addColorStop(0,   'rgba(0,0,0,1)');
+      cg.addColorStop(0.65,'rgba(0,0,0,0.95)');
+      cg.addColorStop(1,   'transparent');
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(bh.x, bh.y, bh.r * 2.2, 0, Math.PI * 2); ctx.fill();
+
+      // Mouse hover flare
+      var dx = mouse.x - bh.x, dy = mouse.y - bh.y;
+      var d = Math.sqrt(dx * dx + dy * dy);
+      if (d < bh.accR * 1.7) {
+        var intens = (1 - d / (bh.accR * 1.7)) * 0.65;
+        var wg = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.accR * 1.1);
+        wg.addColorStop(0,   'hsla(' + bh.hue + ',100%,82%,' + (intens * 0.55) + ')');
+        wg.addColorStop(0.4, 'hsla(' + bh.hue + ',90%,62%,' + (intens * 0.28) + ')');
+        wg.addColorStop(1,   'transparent');
+        ctx.fillStyle = wg;
+        ctx.beginPath(); ctx.arc(bh.x, bh.y, bh.accR * 1.1, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function drawDrones() {
+    for (var i = 0; i < drones.length; i++) {
+      var d = drones[i];
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < 0 || d.x > W) d.vx *= -1;
+      if (d.y < 0 || d.y > H) d.vy *= -1;
+      d.trail.push({ x: d.x, y: d.y });
+      if (d.trail.length > d.maxT) d.trail.shift();
+      for (var j = 1; j < d.trail.length; j++) {
+        ctx.beginPath();
+        ctx.moveTo(d.trail[j-1].x, d.trail[j-1].y);
+        ctx.lineTo(d.trail[j].x, d.trail[j].y);
+        ctx.strokeStyle = 'rgba(0,255,231,' + ((j / d.trail.length) * 0.38) + ')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.sz, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,255,231,0.88)'; ctx.fill();
+      var dg = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.sz * 6);
+      dg.addColorStop(0, 'rgba(0,255,231,0.18)'); dg.addColorStop(1, 'transparent');
+      ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(d.x, d.y, d.sz * 6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawScan() {
+    var sy = (t * 18) % H;
+    var sg = ctx.createLinearGradient(0, sy - 4, 0, sy + 4);
+    sg.addColorStop(0, 'transparent');
+    sg.addColorStop(0.5, 'rgba(0,255,231,0.022)');
+    sg.addColorStop(1, 'transparent');
+    ctx.fillStyle = sg; ctx.fillRect(0, sy - 4, W, 8);
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    t += 0.013;
+    drawBg();
+    drawNebulae();
+    drawStars();
+    drawBlackHoles();
+    drawDrones();
+    drawScan();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', function() { resize(); init(); });
+  resize();
+  init();
+  loop();
+})();
+
+/* ═══ CURSOR ═══ */
+var cur = document.getElementById('cur');
+var ring = document.getElementById('cur-ring');
+window.addEventListener('mousemove', function(e) {
+  cur.style.left  = e.clientX + 'px';
+  cur.style.top   = e.clientY + 'px';
+  ring.style.left = e.clientX + 'px';
+  ring.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a,button').forEach(function(el) {
+  el.addEventListener('mouseenter', function() {
+    ring.style.width = '52px'; ring.style.height = '52px';
+    ring.style.borderColor = 'rgba(0,255,231,1)';
+  });
+  el.addEventListener('mouseleave', function() {
+    ring.style.width = '36px'; ring.style.height = '36px';
+    ring.style.borderColor = 'rgba(0,255,231,.55)';
+  });
+});
+
+/* ═══ SCROLL REVEAL ═══ */
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.rv').forEach(function(el) { obs.observe(el); });
+
+/* ═══ NAV ACTIVE ═══ */
+var secs = document.querySelectorAll('section[id]');
+var navAs = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', function() {
+  var cur2 = '';
+  secs.forEach(function(s) { if (window.scrollY >= s.offsetTop - 130) cur2 = s.id; });
+  navAs.forEach(function(a) {
+    var on = a.getAttribute('href') === '#' + cur2;
+    a.style.color = on ? '#00ffe7' : '';
+    if (on) a.classList.add('act'); else a.classList.remove('act');
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
